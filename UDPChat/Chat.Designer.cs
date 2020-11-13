@@ -64,6 +64,7 @@
             this.Controls.Add(this.TextBoxViewHistory);
             this.Name = "Chat";
             this.ShowIcon = false;
+            this.Text = "UDP";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Chat_FormClosed);
             this.Load += new System.EventHandler(this.Chat_Load);
             this.ResumeLayout(false);

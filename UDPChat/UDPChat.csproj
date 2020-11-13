@@ -60,6 +60,7 @@
     <Compile Include="INIManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UDP.cs" />
     <EmbeddedResource Include="Chat.resx">
       <DependentUpon>Chat.cs</DependentUpon>
     </EmbeddedResource>
