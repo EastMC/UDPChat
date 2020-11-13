@@ -14,6 +14,7 @@ namespace UDPChat
     public partial class FormStartup : Form
     {
         private INIManager iniManager = new INIManager(Directory.GetCurrentDirectory() + "\\settings.ini");
+        private Chat chatForm;
 
         public FormStartup()
         {
@@ -25,7 +26,9 @@ namespace UDPChat
             if (textBoxLogin.Text.Any() && TextBoxPassword.Text.Any())
             {
                 iniManager.WritePrivateString("credentials", "login", textBoxLogin.Text);
-                this.Close();
+                chatForm = new Chat(this, textBoxLogin.Text, TextBoxPassword.Text);
+                chatForm.Show();
+                this.Hide();
             }
             else MessageBox.Show("Введите логин и пароль");
 
