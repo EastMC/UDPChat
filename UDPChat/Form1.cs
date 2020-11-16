@@ -26,7 +26,8 @@ namespace UDPChat
             if (textBoxLogin.Text.Any() && TextBoxPassword.Text.Any())
             {
                 iniManager.WritePrivateString("credentials", "login", textBoxLogin.Text);
-                chatForm = new Chat(this, textBoxLogin.Text, TextBoxPassword.Text, textBoxPortSend.Text, textBoxPortReceive.Text);
+                iniManager.WritePrivateString("settings", "ip", textBoxAdress.Text);
+                chatForm = new Chat(this, textBoxLogin.Text, TextBoxPassword.Text, textBoxPortSend.Text, textBoxPortReceive.Text, textBoxAdress.Text);
                 chatForm.Show();
                 this.Hide();
             }
@@ -38,6 +39,9 @@ namespace UDPChat
         {
             string login = iniManager.GetPrivateString("credentials", "login");
             textBoxLogin.Text = login;
+            string ip = iniManager.GetPrivateString("settings", "ip");
+            textBoxAdress.Text = ip;
+
 
             if (textBoxLogin.Text.Any())
             {

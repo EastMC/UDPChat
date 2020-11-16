@@ -14,7 +14,7 @@ namespace UDPChat
 {
     class UDP
     {
-        private static IPAddress remoteIPAddress = IPAddress.Parse("127.0.0.1");
+        private static IPAddress remoteIPAddress;
         private static int remotePort;
         private static int localPort;
         private Thread receiver;
@@ -24,11 +24,12 @@ namespace UDPChat
         public delegate void MessageReceived(string _message);
         public event MessageReceived Notify;
 
-        public UDP(string _portSend, string _portReceive, string _password)
+        public UDP(string _portSend, string _portReceive, string _password, string _ip)
         {
             remotePort = Convert.ToInt32(_portSend);
             localPort = Convert.ToInt32(_portReceive);
             password = _password;
+            remoteIPAddress = IPAddress.Parse(_ip);
 
             receiver = new Thread(new ThreadStart(Receive));
             receiver.Start();

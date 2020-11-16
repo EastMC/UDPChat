@@ -17,12 +17,12 @@ namespace UDPChat
         private FormStartup parent;
         private UDP udp;
 
-        public Chat(FormStartup _parent, string _login, string _password, string _portSend, string _portReceive)
+        public Chat(FormStartup _parent, string _login, string _password, string _portSend, string _portReceive, string _ip)
         {
             login = _login;
             parent = _parent;
             password = _password;
-            udp = new UDP(_portSend, _portReceive, password);
+            udp = new UDP(_portSend, _portReceive, password, _ip);
             udp.Notify += DisplayReceivedMessage;
             InitializeComponent();
         }
