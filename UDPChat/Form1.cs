@@ -26,7 +26,7 @@ namespace UDPChat
             if (textBoxLogin.Text.Any() && TextBoxPassword.Text.Any())
             {
                 iniManager.WritePrivateString("credentials", "login", textBoxLogin.Text);
-                chatForm = new Chat(this, textBoxLogin.Text, TextBoxPassword.Text);
+                chatForm = new Chat(this, textBoxLogin.Text, TextBoxPassword.Text, textBoxPortSend.Text, textBoxPortReceive.Text);
                 chatForm.Show();
                 this.Hide();
             }

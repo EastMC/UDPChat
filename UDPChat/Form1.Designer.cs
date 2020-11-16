@@ -33,6 +33,8 @@
             this.TextBoxPassword = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.textBoxPortSend = new System.Windows.Forms.TextBox();
+            this.textBoxPortReceive = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // ButtonEnter
@@ -84,11 +86,29 @@
             this.label2.TabIndex = 4;
             this.label2.Text = "Пароль";
             // 
+            // textBoxPortSend
+            // 
+            this.textBoxPortSend.Location = new System.Drawing.Point(13, 85);
+            this.textBoxPortSend.Name = "textBoxPortSend";
+            this.textBoxPortSend.Size = new System.Drawing.Size(37, 20);
+            this.textBoxPortSend.TabIndex = 5;
+            this.textBoxPortSend.Text = "5000";
+            // 
+            // textBoxPortReceive
+            // 
+            this.textBoxPortReceive.Location = new System.Drawing.Point(56, 85);
+            this.textBoxPortReceive.Name = "textBoxPortReceive";
+            this.textBoxPortReceive.Size = new System.Drawing.Size(37, 20);
+            this.textBoxPortReceive.TabIndex = 6;
+            this.textBoxPortReceive.Text = "5000";
+            // 
             // FormStartup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(239, 117);
+            this.Controls.Add(this.textBoxPortReceive);
+            this.Controls.Add(this.textBoxPortSend);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.TextBoxPassword);
@@ -113,6 +133,8 @@
         private System.Windows.Forms.TextBox TextBoxPassword;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBoxPortSend;
+        private System.Windows.Forms.TextBox textBoxPortReceive;
     }
 }
 
