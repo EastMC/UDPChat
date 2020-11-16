@@ -22,7 +22,7 @@ namespace UDPChat
             login = _login;
             parent = _parent;
             password = _password;
-            udp = new UDP(_portSend, _portReceive);
+            udp = new UDP(_portSend, _portReceive, password);
             udp.Notify += DisplayReceivedMessage;
             InitializeComponent();
         }
