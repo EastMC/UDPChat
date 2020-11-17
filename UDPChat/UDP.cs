@@ -24,20 +24,52 @@ namespace UDPChat
         public delegate void MessageReceived(string _message);
         public event MessageReceived Notify;
 
-        public UDP(string _portSend, string _portReceive, string _password, string _ip)
+        public UDP(int _portSend, int _portReceive, string _password, IPAddress _ip, int _mask)
         {
-            FindAllComputersInLAN();
-            remotePort = Convert.ToInt32(_portSend);
-            localPort = Convert.ToInt32(_portReceive);
+            remotePort = _portSend;
+            localPort = _portReceive;
             password = _password;
-            remoteIPAddress = IPAddress.Parse(_ip);
+            LANAddresses = FindAllComputersInLAN(_ip, _mask);
+
+            remoteIPAddress = IPAddress.Parse("127.0.0.1");
 
             receiver = new Thread(new ThreadStart(Receive));
             receiver.Start();
         }
-
-        private void FindAllComputersInLAN()
+        
+        private Dictionary<string, IPAddress> FindAllComputersInLAN(IPAddress _ip, int _mask)
         {
+            UInt32 mask = 0;
+            for (int i = 0; i < _mask; i++)
+            {
+                mask += (UInt32)Math.Pow(2, 31 - i);
+            }
+            byte[] netBytes = _ip.GetAddressBytes().Reverse().ToArray();
+            UInt32 net = BitConverter.ToUInt32(netBytes, 0);
+
+            List<UInt32> l = new List<uint>();
+            Parallel.For(UInt32.MinValue, UInt32.MaxValue, i=>
+            {
+                if ((net ^ mask) == (i ^ mask))
+                {
+                    l.Add((UInt32)i);
+                }
+            });
+
+            foreach (UInt32 ui in l)
+            {
+                byte[] bb = BitConverter.GetBytes(ui);
+                for (int i = 0; i < 4; i++)
+                {
+                    Console.Write($"{bb[i]} ");
+                }
+                Console.WriteLine();
+            }
+
+
+            /*
+            _ip.GetAddressBytes
+
             if (NetworkInterface.GetIsNetworkAvailable())
             {
                 var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -67,6 +99,8 @@ namespace UDPChat
             pingSender.SendAsync(who, timeout, buffer, options, waiter);
 
             Console.WriteLine("Ping example completed.");
+            */
+            return new Dictionary<string, IPAddress>();
         }
 
         private static void PingCompletedCallback(object sender, PingCompletedEventArgs e)

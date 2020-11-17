@@ -19,21 +19,20 @@ namespace UDPChat
         
         public UDP Udp
         {
-            set { udp = value; }
+            set
+            {
+                udp = value;
+                udp.Notify += DisplayReceivedMessage;
+            }
             get { return udp; }
         }
 
-        public Chat(FormStartup _parent, string _login, string _password, string _portSend, string _portReceive, string _ip)
+        public Chat(FormStartup _parent, string _login)
         {
             login = _login;
             parent = _parent;
-            password = _password;
-            udp = new UDP(_portSend, _portReceive, password, _ip);
-            udp.Notify += DisplayReceivedMessage;
             InitializeComponent();
         }
-
-        
 
         private void Chat_FormClosed(object sender, FormClosedEventArgs e)
         {

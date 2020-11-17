@@ -33,14 +33,17 @@
             this.TextBoxPassword = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.textBoxPortSend = new System.Windows.Forms.TextBox();
-            this.textBoxPortReceive = new System.Windows.Forms.TextBox();
             this.labelPortSend = new System.Windows.Forms.Label();
             this.labelPortReceive = new System.Windows.Forms.Label();
             this.textBoxLANNet = new System.Windows.Forms.TextBox();
             this.buttonSettings = new System.Windows.Forms.Button();
-            this.textBoxLANMask = new System.Windows.Forms.TextBox();
             this.labelLANParams = new System.Windows.Forms.Label();
+            this.numericUpDownMask = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownPortSend = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownPortReceive = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMask)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPortSend)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPortReceive)).BeginInit();
             this.SuspendLayout();
             // 
             // ButtonEnter
@@ -92,24 +95,6 @@
             this.label2.TabIndex = 4;
             this.label2.Text = "Пароль";
             // 
-            // textBoxPortSend
-            // 
-            this.textBoxPortSend.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBoxPortSend.Location = new System.Drawing.Point(167, 118);
-            this.textBoxPortSend.Name = "textBoxPortSend";
-            this.textBoxPortSend.Size = new System.Drawing.Size(58, 26);
-            this.textBoxPortSend.TabIndex = 5;
-            this.textBoxPortSend.Text = "8020";
-            // 
-            // textBoxPortReceive
-            // 
-            this.textBoxPortReceive.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBoxPortReceive.Location = new System.Drawing.Point(167, 150);
-            this.textBoxPortReceive.Name = "textBoxPortReceive";
-            this.textBoxPortReceive.Size = new System.Drawing.Size(58, 26);
-            this.textBoxPortReceive.TabIndex = 6;
-            this.textBoxPortReceive.Text = "8030";
-            // 
             // labelPortSend
             // 
             this.labelPortSend.AutoSize = true;
@@ -154,15 +139,6 @@
             this.buttonSettings.UseVisualStyleBackColor = false;
             this.buttonSettings.Click += new System.EventHandler(this.buttonSettings_Click);
             // 
-            // textBoxLANMask
-            // 
-            this.textBoxLANMask.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBoxLANMask.Location = new System.Drawing.Point(167, 209);
-            this.textBoxLANMask.Name = "textBoxLANMask";
-            this.textBoxLANMask.Size = new System.Drawing.Size(43, 26);
-            this.textBoxLANMask.TabIndex = 8;
-            this.textBoxLANMask.Text = "24";
-            // 
             // labelLANParams
             // 
             this.labelLANParams.AutoSize = true;
@@ -173,6 +149,60 @@
             this.labelLANParams.TabIndex = 12;
             this.labelLANParams.Text = "Параметры локальной сети";
             // 
+            // numericUpDownMask
+            // 
+            this.numericUpDownMask.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.numericUpDownMask.Location = new System.Drawing.Point(167, 209);
+            this.numericUpDownMask.Maximum = new decimal(new int[] {
+            32,
+            0,
+            0,
+            0});
+            this.numericUpDownMask.Name = "numericUpDownMask";
+            this.numericUpDownMask.Size = new System.Drawing.Size(58, 26);
+            this.numericUpDownMask.TabIndex = 13;
+            this.numericUpDownMask.Value = new decimal(new int[] {
+            24,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownPortSend
+            // 
+            this.numericUpDownPortSend.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.numericUpDownPortSend.Location = new System.Drawing.Point(167, 119);
+            this.numericUpDownPortSend.Maximum = new decimal(new int[] {
+            65535,
+            0,
+            0,
+            0});
+            this.numericUpDownPortSend.Name = "numericUpDownPortSend";
+            this.numericUpDownPortSend.Size = new System.Drawing.Size(58, 26);
+            this.numericUpDownPortSend.TabIndex = 14;
+            this.numericUpDownPortSend.Value = new decimal(new int[] {
+            8100,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDownPortReceive
+            // 
+            this.numericUpDownPortReceive.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.numericUpDownPortReceive.Location = new System.Drawing.Point(167, 151);
+            this.numericUpDownPortReceive.Maximum = new decimal(new int[] {
+            65535,
+            0,
+            0,
+            0});
+            this.numericUpDownPortReceive.Name = "numericUpDownPortReceive";
+            this.numericUpDownPortReceive.Size = new System.Drawing.Size(58, 26);
+            this.numericUpDownPortReceive.TabIndex = 15;
+            this.numericUpDownPortReceive.Value = new decimal(new int[] {
+            8101,
+            0,
+            0,
+            0});
+            // 
             // FormStartup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -180,14 +210,14 @@
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(236, 258);
+            this.Controls.Add(this.numericUpDownPortReceive);
+            this.Controls.Add(this.numericUpDownPortSend);
+            this.Controls.Add(this.numericUpDownMask);
             this.Controls.Add(this.labelLANParams);
-            this.Controls.Add(this.textBoxLANMask);
             this.Controls.Add(this.buttonSettings);
             this.Controls.Add(this.textBoxLANNet);
             this.Controls.Add(this.labelPortReceive);
             this.Controls.Add(this.labelPortSend);
-            this.Controls.Add(this.textBoxPortReceive);
-            this.Controls.Add(this.textBoxPortSend);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.TextBoxPassword);
@@ -201,6 +231,9 @@
             this.ShowInTaskbar = false;
             this.Text = "UDP";
             this.Load += new System.EventHandler(this.FormStartup_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMask)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPortSend)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPortReceive)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -213,14 +246,14 @@
         private System.Windows.Forms.TextBox TextBoxPassword;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBoxPortSend;
-        private System.Windows.Forms.TextBox textBoxPortReceive;
         private System.Windows.Forms.Label labelPortSend;
         private System.Windows.Forms.Label labelPortReceive;
         private System.Windows.Forms.TextBox textBoxLANNet;
         private System.Windows.Forms.Button buttonSettings;
-        private System.Windows.Forms.TextBox textBoxLANMask;
         private System.Windows.Forms.Label labelLANParams;
+        private System.Windows.Forms.NumericUpDown numericUpDownMask;
+        private System.Windows.Forms.NumericUpDown numericUpDownPortSend;
+        private System.Windows.Forms.NumericUpDown numericUpDownPortReceive;
     }
 }
 

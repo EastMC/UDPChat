@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -22,24 +23,45 @@ namespace UDPChat
             SetSettingsFormsVisible(false);
         }
 
+        private bool isInputsValid()
+        {
+            try
+            {
+                var netIP = IPAddress.Parse(textBoxLANNet.Text);
+            }
+            catch { return false; }
+            return true;
+        }
+
         private void ButtonEnter_Click(object sender, EventArgs e)
         {
             if (textBoxLogin.Text.Any() && TextBoxPassword.Text.Any())
             {
-                iniManager.WritePrivateString("credentials", "login", textBoxLogin.Text);
-                iniManager.WritePrivateString("settings", "ip", textBoxLANNet.Text);
-                ///var udp = new UDP(textBoxPortSend.Text,
-                ///    textBoxPortReceive.Text,
-                ///    TextBoxPassword.Text,
-                ///    textBoxLANNet.Text,
-                //    textBoxLANMask.Text);
-               // udp.Notify += DisplayReceivedMessage;
+                if (isInputsValid())
+                {
+                    iniManager.WritePrivateString("credentials", "login", textBoxLogin.Text);
+                    iniManager.WritePrivateString("settings", "ip", textBoxLANNet.Text);
+                    chatForm = new Chat(this, textBoxLogin.Text);
+                    var udp = new UDP((int)numericUpDownPortSend.Value,
+                        (int)numericUpDownPortReceive.Value,
+                        TextBoxPassword.Text,
+                        IPAddress.Parse(textBoxLANNet.Text),
+                        (int)numericUpDownMask.Value);
+                    chatForm.Udp = udp;
+                    chatForm.Show();
+                    this.Hide();
+                }
+                else
+                {
+                    MessageBox.Show("Некорректные параметры настройки.");
+                    SetSettingsFormsVisible(true);
+                }
 
 
-                chatForm = new Chat(this, textBoxLogin.Text, TextBoxPassword.Text, textBoxPortSend.Text, textBoxPortReceive.Text, textBoxLANNet.Text);
-                chatForm.Show();
 
-                this.Hide();
+
+
+
             }
             else MessageBox.Show("Введите логин и пароль");
 
@@ -77,10 +99,10 @@ namespace UDPChat
             labelPortReceive.Visible = _isVisible;
             labelPortSend.Visible = _isVisible;
             labelLANParams.Visible = _isVisible;
-            textBoxLANMask.Visible = _isVisible;
+            numericUpDownMask.Visible = _isVisible;
             textBoxLANNet.Visible = _isVisible;
-            textBoxPortReceive.Visible = _isVisible;
-            textBoxPortSend.Visible = _isVisible;
+            numericUpDownPortReceive.Visible = _isVisible;
+            numericUpDownPortSend.Visible = _isVisible;
         }
 
 
