@@ -16,7 +16,7 @@ namespace UDPChat
     public partial class UDP
     {
         private static IPAddress remoteIPAddress;
-        private static Dictionary<string, IPAddress> LANAddresses;
+        private static List<IPAddress> LANAddresses;
         private static int remotePort;
         private static int localPort;
         private Thread receiver;
@@ -37,34 +37,50 @@ namespace UDPChat
             receiver.Start();
         }
         
-        private Dictionary<string, IPAddress> FindAllComputersInLAN(IPAddress _ip, int _mask)
+        private List<IPAddress> FindAllComputersInLAN(IPAddress _ip, int _mask)
         {
-            UInt32 mask = 0;
-            for (int i = 0; i < _mask; i++)
-            {
-                mask += (UInt32)Math.Pow(2, 31 - i);
-            }
-            byte[] netBytes = _ip.GetAddressBytes().Reverse().ToArray();
-            UInt32 net = BitConverter.ToUInt32(netBytes, 0);
+            var listIPAddresses = new List<IPAddress>();
+            var netBytes = _ip.GetAddressBytes().Reverse().ToArray();
+            var netNumber = BitConverter.ToUInt32(netBytes, 0);
+            var net = Convert.ToString(netNumber, 2);
 
-            List<UInt32> l = new List<uint>();
-            Parallel.For(UInt32.MinValue, UInt32.MaxValue, i=>
+            var unchangeablePart = net.Substring(0, _mask);
+            for (UInt32 changeablePart = 1; changeablePart < Math.Pow(2, 32 - _mask); changeablePart++)
             {
-                if ((net ^ mask) == (i ^ mask))
-                {
-                    l.Add((UInt32)i);
-                }
-            });
+                var tailValuePart = Convert.ToString(changeablePart, 2);
+                var tailNullPart = string.Empty;
+                for (int i = 0; i < 32 - _mask - tailValuePart.Length; i++)
+                    tailNullPart += "0";
+                var tail = tailNullPart + tailValuePart;
+                var ipString = unchangeablePart + tail;
 
-            foreach (UInt32 ui in l)
-            {
-                byte[] bb = BitConverter.GetBytes(ui);
+                Console.WriteLine(ipString);
+                UInt32 ipNumber = 0;
+                byte[] bytes = new byte[4];
                 for (int i = 0; i < 4; i++)
                 {
-                    Console.Write($"{bb[i]} ");
+                    for (int j = 0; j < 8; j++)
+                    {
+                        bytes[i] += (byte)((ipString[i * 8 + j] - 48) * Math.Pow(2, 7-j));
+                    }
                 }
+                for (int i = 0; i < 4; i++)
+                    Console.Write($"{bytes[i]} ");
                 Console.WriteLine();
+
+
+                var ipBytes = BitConverter.GetBytes(ipNumber);
+
+                for (int i = 0; i < 4; i++)
+                    Console.Write($"{ipBytes[i]} ");
+                Console.WriteLine();
+
+                listIPAddresses.Add(new IPAddress(ipBytes));
             }
+
+            foreach (IPAddress i in listIPAddresses)
+                Console.WriteLine($"{i}");
+
 
 
             /*
@@ -100,7 +116,7 @@ namespace UDPChat
 
             Console.WriteLine("Ping example completed.");
             */
-            return new Dictionary<string, IPAddress>();
+            return listIPAddresses;
         }
 
         private static void PingCompletedCallback(object sender, PingCompletedEventArgs e)
