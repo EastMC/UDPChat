@@ -16,6 +16,12 @@ namespace UDPChat
         private string password;
         private FormStartup parent;
         private UDP udp;
+        
+        public UDP Udp
+        {
+            set { udp = value; }
+            get { return udp; }
+        }
 
         public Chat(FormStartup _parent, string _login, string _password, string _portSend, string _portReceive, string _ip)
         {
@@ -26,6 +32,8 @@ namespace UDPChat
             udp.Notify += DisplayReceivedMessage;
             InitializeComponent();
         }
+
+        
 
         private void Chat_FormClosed(object sender, FormClosedEventArgs e)
         {

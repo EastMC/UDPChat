@@ -9,23 +9,24 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using System.Net.NetworkInformation;
 
 namespace UDPChat
 {
-    class UDP
+    public partial class UDP
     {
         private static IPAddress remoteIPAddress;
+        private static Dictionary<string, IPAddress> LANAddresses;
         private static int remotePort;
         private static int localPort;
         private Thread receiver;
-        private static bool isListening = true;
         private string password;
-
         public delegate void MessageReceived(string _message);
         public event MessageReceived Notify;
 
         public UDP(string _portSend, string _portReceive, string _password, string _ip)
         {
+            FindAllComputersInLAN();
             remotePort = Convert.ToInt32(_portSend);
             localPort = Convert.ToInt32(_portReceive);
             password = _password;
@@ -33,6 +34,74 @@ namespace UDPChat
 
             receiver = new Thread(new ThreadStart(Receive));
             receiver.Start();
+        }
+
+        private void FindAllComputersInLAN()
+        {
+            if (NetworkInterface.GetIsNetworkAvailable())
+            {
+                var host = Dns.GetHostEntry(Dns.GetHostName());
+                foreach (var ip in host.AddressList)
+                {
+                    if (ip.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        Console.WriteLine(ip.ToString());
+                    }
+                }
+            }
+            return;
+            string who = "127.0.0.1";
+            AutoResetEvent waiter = new AutoResetEvent(false);
+
+            Ping pingSender = new Ping();
+            pingSender.PingCompleted += new PingCompletedEventHandler(PingCompletedCallback);
+
+            string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+            byte[] buffer = Encoding.ASCII.GetBytes(data);
+            int timeout = 12000;
+            PingOptions options = new PingOptions(64, true);
+
+            Console.WriteLine("Time to live: {0}", options.Ttl);
+            Console.WriteLine("Don't fragment: {0}", options.DontFragment);
+
+            pingSender.SendAsync(who, timeout, buffer, options, waiter);
+
+            Console.WriteLine("Ping example completed.");
+        }
+
+        private static void PingCompletedCallback(object sender, PingCompletedEventArgs e)
+        {
+            if (e.Cancelled)
+            {
+                Console.WriteLine("Ping canceled.");
+               ((AutoResetEvent)e.UserState).Set();
+            }
+
+            if (e.Error != null)
+            {
+                Console.WriteLine("Ping failed:");
+                Console.WriteLine(e.Error.ToString());
+                ((AutoResetEvent)e.UserState).Set();
+            }
+            PingReply reply = e.Reply;
+            DisplayReply(reply);
+            ((AutoResetEvent)e.UserState).Set();
+        }
+
+        public static void DisplayReply(PingReply reply)
+        {
+            if (reply == null)
+                return;
+
+            Console.WriteLine("ping status: {0}", reply.Status);
+            if (reply.Status == IPStatus.Success)
+            {
+                Console.WriteLine("Address: {0}", reply.Address.ToString());
+                Console.WriteLine("RoundTrip time: {0}", reply.RoundtripTime);
+                Console.WriteLine("Time to live: {0}", reply.Options.Ttl);
+                Console.WriteLine("Don't fragment: {0}", reply.Options.DontFragment);
+                Console.WriteLine("Buffer size: {0}", reply.Buffer.Length);
+            }
         }
 
         public void CloseAllConnections()
@@ -101,18 +170,15 @@ namespace UDPChat
         }
 
 
-        public void Receive()
+        public async void Receive()
         {
-            UdpClient receivingUdpClient = new UdpClient(localPort);
-            
-            IPEndPoint RemoteIpEndPoint = null;
+            UdpClient receivingUdpClient = new UdpClient(localPort);  
             try
             {
-                while (isListening)
-                {
-                    byte[] receiveBytes = receivingUdpClient.Receive(
-                       ref RemoteIpEndPoint);
-
+                while(true)
+                { 
+                    var udpReceiveResult = await receivingUdpClient.ReceiveAsync();
+                    byte[] receiveBytes = udpReceiveResult.Buffer;
                     string returnData = Encoding.UTF8.GetString(Decrypt(receiveBytes));
                     Notify?.Invoke(returnData);
                 }

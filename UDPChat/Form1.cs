@@ -19,6 +19,7 @@ namespace UDPChat
         public FormStartup()
         {
             InitializeComponent();
+            SetSettingsFormsVisible(false);
         }
 
         private void ButtonEnter_Click(object sender, EventArgs e)
@@ -26,9 +27,18 @@ namespace UDPChat
             if (textBoxLogin.Text.Any() && TextBoxPassword.Text.Any())
             {
                 iniManager.WritePrivateString("credentials", "login", textBoxLogin.Text);
-                iniManager.WritePrivateString("settings", "ip", textBoxAdress.Text);
-                chatForm = new Chat(this, textBoxLogin.Text, TextBoxPassword.Text, textBoxPortSend.Text, textBoxPortReceive.Text, textBoxAdress.Text);
+                iniManager.WritePrivateString("settings", "ip", textBoxLANNet.Text);
+                ///var udp = new UDP(textBoxPortSend.Text,
+                ///    textBoxPortReceive.Text,
+                ///    TextBoxPassword.Text,
+                ///    textBoxLANNet.Text,
+                //    textBoxLANMask.Text);
+               // udp.Notify += DisplayReceivedMessage;
+
+
+                chatForm = new Chat(this, textBoxLogin.Text, TextBoxPassword.Text, textBoxPortSend.Text, textBoxPortReceive.Text, textBoxLANNet.Text);
                 chatForm.Show();
+
                 this.Hide();
             }
             else MessageBox.Show("Введите логин и пароль");
@@ -40,7 +50,7 @@ namespace UDPChat
             string login = iniManager.GetPrivateString("credentials", "login");
             textBoxLogin.Text = login;
             string ip = iniManager.GetPrivateString("settings", "ip");
-            textBoxAdress.Text = ip;
+            textBoxLANNet.Text = ip;
 
 
             if (textBoxLogin.Text.Any())
@@ -56,5 +66,23 @@ namespace UDPChat
                 ButtonEnter_Click(this, new EventArgs());
             }
         }
+
+        private void buttonSettings_Click(object sender, EventArgs e)
+        {
+            SetSettingsFormsVisible(!labelLANParams.Visible);
+        }
+
+        private void SetSettingsFormsVisible(bool _isVisible)
+        {
+            labelPortReceive.Visible = _isVisible;
+            labelPortSend.Visible = _isVisible;
+            labelLANParams.Visible = _isVisible;
+            textBoxLANMask.Visible = _isVisible;
+            textBoxLANNet.Visible = _isVisible;
+            textBoxPortReceive.Visible = _isVisible;
+            textBoxPortSend.Visible = _isVisible;
+        }
+
+
     }
 }
