@@ -23,45 +23,19 @@ namespace UDPChat
             SetSettingsFormsVisible(false);
         }
 
-        private bool isInputsValid()
-        {
-            try
-            {
-                var netIP = IPAddress.Parse(textBoxLANNet.Text);
-            }
-            catch { return false; }
-            return true;
-        }
 
         private void ButtonEnter_Click(object sender, EventArgs e)
         {
             if (textBoxLogin.Text.Any() && TextBoxPassword.Text.Any())
             {
-                if (isInputsValid())
-                {
                     iniManager.WritePrivateString("credentials", "login", textBoxLogin.Text);
-                    iniManager.WritePrivateString("settings", "ip", textBoxLANNet.Text);
                     chatForm = new Chat(this, textBoxLogin.Text);
                     var udp = new UDP((int)numericUpDownPortSend.Value,
                         (int)numericUpDownPortReceive.Value,
-                        TextBoxPassword.Text,
-                        IPAddress.Parse(textBoxLANNet.Text),
-                        (int)numericUpDownMask.Value);
+                        TextBoxPassword.Text);
                     chatForm.Udp = udp;
                     chatForm.Show();
-                    this.Hide();
-                }
-                else
-                {
-                    MessageBox.Show("Некорректные параметры настройки.");
-                    SetSettingsFormsVisible(true);
-                }
-
-
-
-
-
-
+                    this.Hide();               
             }
             else MessageBox.Show("Введите логин и пароль");
 
@@ -71,9 +45,6 @@ namespace UDPChat
         {
             string login = iniManager.GetPrivateString("credentials", "login");
             textBoxLogin.Text = login;
-            string ip = iniManager.GetPrivateString("settings", "ip");
-            textBoxLANNet.Text = ip;
-
 
             if (textBoxLogin.Text.Any())
             {
@@ -91,16 +62,13 @@ namespace UDPChat
 
         private void buttonSettings_Click(object sender, EventArgs e)
         {
-            SetSettingsFormsVisible(!labelLANParams.Visible);
+            SetSettingsFormsVisible(!labelPortReceive.Visible);
         }
 
         private void SetSettingsFormsVisible(bool _isVisible)
         {
             labelPortReceive.Visible = _isVisible;
             labelPortSend.Visible = _isVisible;
-            labelLANParams.Visible = _isVisible;
-            numericUpDownMask.Visible = _isVisible;
-            textBoxLANNet.Visible = _isVisible;
             numericUpDownPortReceive.Visible = _isVisible;
             numericUpDownPortSend.Visible = _isVisible;
         }

@@ -16,7 +16,6 @@ namespace UDPChat
     public partial class UDP
     {
         private static IPAddress remoteIPAddress;
-        private static List<IPAddress> LANAddresses;
         private static int remotePort;
         private static int localPort;
         private Thread receiver;
@@ -24,131 +23,17 @@ namespace UDPChat
         public delegate void MessageReceived(string _message);
         public event MessageReceived Notify;
 
-        public UDP(int _portSend, int _portReceive, string _password, IPAddress _ip, int _mask)
+        public UDP(int _portSend, int _portReceive, string _password)
         {
             remotePort = _portSend;
             localPort = _portReceive;
             password = _password;
-            LANAddresses = FindAllComputersInLAN(_ip, _mask);
-
-            remoteIPAddress = IPAddress.Parse("127.0.0.1");
+            remoteIPAddress = IPAddress.Parse("235.5.5.11");
 
             receiver = new Thread(new ThreadStart(Receive));
             receiver.Start();
         }
-        
-        private List<IPAddress> FindAllComputersInLAN(IPAddress _ip, int _mask)
-        {
-            var listIPAddresses = new List<IPAddress>();
-            var netBytes = _ip.GetAddressBytes().Reverse().ToArray();
-            var netNumber = BitConverter.ToUInt32(netBytes, 0);
-            var net = Convert.ToString(netNumber, 2);
-
-            var netWithStartZeros = "";
-            for (int i = 0; i < 32 - net.Length; i++)
-                netWithStartZeros += "0";
-            net = netWithStartZeros + net;
-            
-
-            var unchangeablePart = net.Substring(0, _mask);
-            for (UInt32 changeablePart = 1; changeablePart < Math.Pow(2, 32 - _mask); changeablePart++)
-            {
-                var tailValuePart = Convert.ToString(changeablePart, 2);
-                var tailNullPart = string.Empty;
-                for (int i = 0; i < 32 - _mask - tailValuePart.Length; i++)
-                    tailNullPart += "0";
-                var tail = tailNullPart + tailValuePart;
-                var ipString = unchangeablePart + tail;
-                
-                byte[] ipBytes = new byte[4];
-                for (int i = 0; i < 4; i++)
-                {
-                    for (int j = 0; j < 8; j++)
-                    {
-                        ipBytes[i] += (byte)((ipString[i * 8 + j] - 48) * Math.Pow(2, 7-j));
-                    }
-                }
-                listIPAddresses.Add(new IPAddress(ipBytes));
-
-
-                string who = listIPAddresses.Last().ToString();
-                AutoResetEvent waiter = new AutoResetEvent(false);
-
-                Ping pingSender = new Ping();
-                pingSender.PingCompleted += new PingCompletedEventHandler(PingCompletedCallback);
-
-                string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-                byte[] buffer = Encoding.ASCII.GetBytes(data);
-                int timeout = 12000;
-                PingOptions options = new PingOptions(64, true);
-
-                Console.WriteLine($"{who}");
-                Console.WriteLine("Time to live: {0}", options.Ttl);
-                Console.WriteLine("Don't fragment: {0}", options.DontFragment);
-
-                pingSender.SendAsync(who, timeout, buffer, options, waiter);
-
-                Console.WriteLine("Ping example completed.");
-
-               
-            }
-
-           // foreach (IPAddress i in listIPAddresses)
-             //   Console.WriteLine($"{i}");
-
-                       
-            /*
-            if (NetworkInterface.GetIsNetworkAvailable())
-            {
-                var host = Dns.GetHostEntry(Dns.GetHostName());
-                foreach (var ip in host.AddressList)
-                {
-                    if (ip.AddressFamily == AddressFamily.InterNetwork)
-                    {
-                        Console.WriteLine(ip.ToString());
-                    }
-                }
-            }
-            */           
-         
-            return listIPAddresses;
-        }
-
-        private static void PingCompletedCallback(object sender, PingCompletedEventArgs e)
-        {
-            if (e.Cancelled)
-            {
-                Console.WriteLine("Ping canceled.");
-               ((AutoResetEvent)e.UserState).Set();
-            }
-
-            if (e.Error != null)
-            {
-                Console.WriteLine("Ping failed:");
-                Console.WriteLine(e.Error.ToString());
-                ((AutoResetEvent)e.UserState).Set();
-            }
-            PingReply reply = e.Reply;
-            DisplayReply(reply);
-            ((AutoResetEvent)e.UserState).Set();
-        }
-
-        public static void DisplayReply(PingReply reply)
-        {
-            if (reply == null)
-                return;
-
-            Console.WriteLine("ping status: {0}", reply.Status);
-            if (reply.Status == IPStatus.Success)
-            {
-                Console.WriteLine("Address: {0}", reply.Address.ToString());
-                Console.WriteLine("RoundTrip time: {0}", reply.RoundtripTime);
-                Console.WriteLine("Time to live: {0}", reply.Options.Ttl);
-                Console.WriteLine("Don't fragment: {0}", reply.Options.DontFragment);
-                Console.WriteLine("Buffer size: {0}", reply.Buffer.Length);
-            }
-        }
-
+      
         public void CloseAllConnections()
         {
             receiver.Interrupt();
@@ -174,6 +59,25 @@ namespace UDPChat
             }
         }
 
+        public async void Receive()
+        {
+            UdpClient receivingUdpClient = new UdpClient(localPort);
+            receivingUdpClient.JoinMulticastGroup(remoteIPAddress, 50);
+            try
+            {
+                while (true)
+                {
+                    var udpReceiveResult = await receivingUdpClient.ReceiveAsync();
+                    byte[] receiveBytes = udpReceiveResult.Buffer;
+                    string returnData = Encoding.UTF8.GetString(Decrypt(receiveBytes));
+                    Notify?.Invoke(returnData);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Возникло исключение: " + ex.ToString() + "\n  " + ex.Message);
+            }
+        }
         public byte[] Encrypt(byte[] _plainText)
         {
             SHA256CryptoServiceProvider hashFunction = new SHA256CryptoServiceProvider();
@@ -214,25 +118,100 @@ namespace UDPChat
             return plainText;
         }
 
+        /*
+      private List<IPAddress> FindAllComputersInLAN(IPAddress _ip, int _mask)
+      {
+          var listIPAddresses = new List<IPAddress>();
+          var netBytes = _ip.GetAddressBytes().Reverse().ToArray();
+          var netNumber = BitConverter.ToUInt32(netBytes, 0);
+          var net = Convert.ToString(netNumber, 2);
 
-        public async void Receive()
-        {
-            UdpClient receivingUdpClient = new UdpClient(localPort);  
-            try
-            {
-                while(true)
-                { 
-                    var udpReceiveResult = await receivingUdpClient.ReceiveAsync();
-                    byte[] receiveBytes = udpReceiveResult.Buffer;
-                    string returnData = Encoding.UTF8.GetString(Decrypt(receiveBytes));
-                    Notify?.Invoke(returnData);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Возникло исключение: " + ex.ToString() + "\n  " + ex.Message);
-            }
-        }
+          var netWithStartZeros = "";
+          for (int i = 0; i < 32 - net.Length; i++)
+              netWithStartZeros += "0";
+          net = netWithStartZeros + net;           
+
+          var unchangeablePart = net.Substring(0, _mask);
+          for (UInt32 changeablePart = 1; changeablePart < Math.Pow(2, 32 - _mask); changeablePart++)
+          {
+              var tailValuePart = Convert.ToString(changeablePart, 2);
+              var tailNullPart = string.Empty;
+              for (int i = 0; i < 32 - _mask - tailValuePart.Length; i++)
+                  tailNullPart += "0";
+              var tail = tailNullPart + tailValuePart;
+              var ipString = unchangeablePart + tail;
+
+              byte[] ipBytes = new byte[4];
+              for (int i = 0; i < 4; i++)
+              {
+                  for (int j = 0; j < 8; j++)
+                  {
+                      ipBytes[i] += (byte)((ipString[i * 8 + j] - 48) * Math.Pow(2, 7-j));
+                  }
+              }
+              listIPAddresses.Add(new IPAddress(ipBytes));
+
+
+              string who = listIPAddresses.Last().ToString();
+              AutoResetEvent waiter = new AutoResetEvent(false);
+
+              Ping pingSender = new Ping();
+              pingSender.PingCompleted += new PingCompletedEventHandler(PingCompletedCallback);
+
+              string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+              byte[] buffer = Encoding.ASCII.GetBytes(data);
+              int timeout = 12000;
+              PingOptions options = new PingOptions(64, true);
+
+              pingSender.SendAsync(who, timeout, buffer, options, waiter);               
+          }
+
+         // foreach (IPAddress i in listIPAddresses)
+           //   Console.WriteLine($"{i}");
+
+
+          return listIPAddresses;
+      }
+
+      private static void PingCompletedCallback(object sender, PingCompletedEventArgs e)
+      {
+          if (e.Cancelled)
+          {
+              Console.WriteLine("Ping canceled.");
+             ((AutoResetEvent)e.UserState).Set();
+          }
+
+          if (e.Error != null)
+          {
+              Console.WriteLine("Ping failed:");
+              Console.WriteLine(e.Error.ToString());
+              ((AutoResetEvent)e.UserState).Set();
+          }
+          PingReply reply = e.Reply;
+          DisplayReply(reply);
+          ((AutoResetEvent)e.UserState).Set();
+      }
+
+      public static void DisplayReply(PingReply reply)
+      {
+          if (reply == null)
+              return;
+
+          Console.WriteLine("ping status: {0}", reply.Status);
+          if (reply.Status == IPStatus.Success)
+          {
+              Console.WriteLine("Address: {0}", reply.Address.ToString());
+              Console.WriteLine("RoundTrip time: {0}", reply.RoundtripTime);
+              Console.WriteLine("Time to live: {0}", reply.Options.Ttl);
+              Console.WriteLine("Don't fragment: {0}", reply.Options.DontFragment);
+              Console.WriteLine("Buffer size: {0}", reply.Buffer.Length);
+          }
+      }
+
+
+
+      */
+
 
 
     }

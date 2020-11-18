@@ -13,10 +13,13 @@ namespace UDPChat
     public partial class Chat : Form
     {
         private string login;
-        private string password;
         private FormStartup parent;
         private UDP udp;
-        
+        private Timer onlineTimer;
+        private const string uniquePart = "14832133161941921251119219416133321481";
+        private const string servicePart = "8899aabbccddeeff0077665544332211";
+        private TreeNode onlineUsers = new TreeNode("Online:");
+
         public UDP Udp
         {
             set
@@ -31,7 +34,25 @@ namespace UDPChat
         {
             login = _login;
             parent = _parent;
+            onlineTimer = new Timer
+            {
+                Interval = 1000
+            };
+            onlineTimer.Tick += SendOnline;
+            onlineTimer.Tick += RefreshOnlineList;
+            onlineTimer.Start();
             InitializeComponent();
+            TreeViewOnline.Nodes.Add(onlineUsers);
+        }
+
+        private void SendOnline(object sender, EventArgs e)
+        {
+            udp.Send($"{login}{servicePart}");
+        }
+
+        private void RefreshOnlineList(object sender, EventArgs e)
+        {
+            onlineUsers.Nodes.Clear();
         }
 
         private void Chat_FormClosed(object sender, FormClosedEventArgs e)
@@ -42,10 +63,23 @@ namespace UDPChat
 
         private void DisplayReceivedMessage(string _message)
         {
-            TextBoxViewHistory.Text = TextBoxViewHistory.Text +
-                    (TextBoxViewHistory.Text.Any() ? "\r\n" : "") +
-                    $"{DateTime.Now.ToShortTimeString()} {_message}";
-        }
+            if (_message.Contains(servicePart))
+            {
+                /*
+                if (onlineUsers.Nodes.Find(_message.Replace(servicePart, ""), false).Length == 0)
+                {
+                    onlineUsers.Nodes.Add(new TreeNode(_message.Replace(servicePart, "")));
+                }
+                */
+            }
+
+            if (_message.Contains(uniquePart))
+            {
+                TextBoxViewHistory.Text = TextBoxViewHistory.Text +
+                        (TextBoxViewHistory.Text.Any() ? "\r\n" : "") +
+                        $"{DateTime.Now.ToShortTimeString()} {_message.Replace(uniquePart,"")}";
+            }
+    }
 
         private void TextBoxMessage_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -54,7 +88,7 @@ namespace UDPChat
                 TextBoxViewHistory.Text = TextBoxViewHistory.Text +
                     (TextBoxViewHistory.Text.Any()?"\r\n":"") +
                     $"{DateTime.Now.ToShortTimeString()} {login}: {TextBoxMessage.Text}";
-                udp.Send($"{login}: {TextBoxMessage.Text}");
+                udp.Send($"{login}: {TextBoxMessage.Text}{uniquePart}");
                 TextBoxMessage.Clear();
 
             }

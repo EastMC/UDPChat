@@ -35,13 +35,9 @@
             this.label2 = new System.Windows.Forms.Label();
             this.labelPortSend = new System.Windows.Forms.Label();
             this.labelPortReceive = new System.Windows.Forms.Label();
-            this.textBoxLANNet = new System.Windows.Forms.TextBox();
             this.buttonSettings = new System.Windows.Forms.Button();
-            this.labelLANParams = new System.Windows.Forms.Label();
-            this.numericUpDownMask = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownPortSend = new System.Windows.Forms.NumericUpDown();
             this.numericUpDownPortReceive = new System.Windows.Forms.NumericUpDown();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMask)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPortSend)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPortReceive)).BeginInit();
             this.SuspendLayout();
@@ -115,16 +111,6 @@
             this.labelPortReceive.TabIndex = 8;
             this.labelPortReceive.Text = "Порт приема";
             // 
-            // textBoxLANNet
-            // 
-            this.textBoxLANNet.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBoxLANNet.Location = new System.Drawing.Point(16, 209);
-            this.textBoxLANNet.Name = "textBoxLANNet";
-            this.textBoxLANNet.Size = new System.Drawing.Size(136, 26);
-            this.textBoxLANNet.TabIndex = 7;
-            this.textBoxLANNet.Text = "10.0.251.0";
-            this.textBoxLANNet.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
             // buttonSettings
             // 
             this.buttonSettings.BackColor = System.Drawing.SystemColors.Control;
@@ -138,34 +124,6 @@
             this.buttonSettings.TabIndex = 4;
             this.buttonSettings.UseVisualStyleBackColor = false;
             this.buttonSettings.Click += new System.EventHandler(this.buttonSettings_Click);
-            // 
-            // labelLANParams
-            // 
-            this.labelLANParams.AutoSize = true;
-            this.labelLANParams.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelLANParams.Location = new System.Drawing.Point(3, 186);
-            this.labelLANParams.Name = "labelLANParams";
-            this.labelLANParams.Size = new System.Drawing.Size(222, 20);
-            this.labelLANParams.TabIndex = 12;
-            this.labelLANParams.Text = "Параметры локальной сети";
-            // 
-            // numericUpDownMask
-            // 
-            this.numericUpDownMask.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.numericUpDownMask.Location = new System.Drawing.Point(167, 209);
-            this.numericUpDownMask.Maximum = new decimal(new int[] {
-            32,
-            0,
-            0,
-            0});
-            this.numericUpDownMask.Name = "numericUpDownMask";
-            this.numericUpDownMask.Size = new System.Drawing.Size(58, 26);
-            this.numericUpDownMask.TabIndex = 13;
-            this.numericUpDownMask.Value = new decimal(new int[] {
-            24,
-            0,
-            0,
-            0});
             // 
             // numericUpDownPortSend
             // 
@@ -209,13 +167,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(236, 258);
+            this.ClientSize = new System.Drawing.Size(236, 189);
             this.Controls.Add(this.numericUpDownPortReceive);
             this.Controls.Add(this.numericUpDownPortSend);
-            this.Controls.Add(this.numericUpDownMask);
-            this.Controls.Add(this.labelLANParams);
             this.Controls.Add(this.buttonSettings);
-            this.Controls.Add(this.textBoxLANNet);
             this.Controls.Add(this.labelPortReceive);
             this.Controls.Add(this.labelPortSend);
             this.Controls.Add(this.label2);
@@ -231,7 +186,6 @@
             this.ShowInTaskbar = false;
             this.Text = "UDP";
             this.Load += new System.EventHandler(this.FormStartup_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMask)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPortSend)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPortReceive)).EndInit();
             this.ResumeLayout(false);
@@ -248,10 +202,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label labelPortSend;
         private System.Windows.Forms.Label labelPortReceive;
-        private System.Windows.Forms.TextBox textBoxLANNet;
         private System.Windows.Forms.Button buttonSettings;
-        private System.Windows.Forms.Label labelLANParams;
-        private System.Windows.Forms.NumericUpDown numericUpDownMask;
         private System.Windows.Forms.NumericUpDown numericUpDownPortSend;
         private System.Windows.Forms.NumericUpDown numericUpDownPortReceive;
     }
