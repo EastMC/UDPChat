@@ -44,6 +44,12 @@ namespace UDPChat
             var netNumber = BitConverter.ToUInt32(netBytes, 0);
             var net = Convert.ToString(netNumber, 2);
 
+            var netWithStartZeros = "";
+            for (int i = 0; i < 32 - net.Length; i++)
+                netWithStartZeros += "0";
+            net = netWithStartZeros + net;
+            
+
             var unchangeablePart = net.Substring(0, _mask);
             for (UInt32 changeablePart = 1; changeablePart < Math.Pow(2, 32 - _mask); changeablePart++)
             {
@@ -53,39 +59,45 @@ namespace UDPChat
                     tailNullPart += "0";
                 var tail = tailNullPart + tailValuePart;
                 var ipString = unchangeablePart + tail;
-
-                Console.WriteLine(ipString);
-                UInt32 ipNumber = 0;
-                byte[] bytes = new byte[4];
+                
+                byte[] ipBytes = new byte[4];
                 for (int i = 0; i < 4; i++)
                 {
                     for (int j = 0; j < 8; j++)
                     {
-                        bytes[i] += (byte)((ipString[i * 8 + j] - 48) * Math.Pow(2, 7-j));
+                        ipBytes[i] += (byte)((ipString[i * 8 + j] - 48) * Math.Pow(2, 7-j));
                     }
                 }
-                for (int i = 0; i < 4; i++)
-                    Console.Write($"{bytes[i]} ");
-                Console.WriteLine();
-
-
-                var ipBytes = BitConverter.GetBytes(ipNumber);
-
-                for (int i = 0; i < 4; i++)
-                    Console.Write($"{ipBytes[i]} ");
-                Console.WriteLine();
-
                 listIPAddresses.Add(new IPAddress(ipBytes));
+
+
+                string who = listIPAddresses.Last().ToString();
+                AutoResetEvent waiter = new AutoResetEvent(false);
+
+                Ping pingSender = new Ping();
+                pingSender.PingCompleted += new PingCompletedEventHandler(PingCompletedCallback);
+
+                string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+                byte[] buffer = Encoding.ASCII.GetBytes(data);
+                int timeout = 12000;
+                PingOptions options = new PingOptions(64, true);
+
+                Console.WriteLine($"{who}");
+                Console.WriteLine("Time to live: {0}", options.Ttl);
+                Console.WriteLine("Don't fragment: {0}", options.DontFragment);
+
+                pingSender.SendAsync(who, timeout, buffer, options, waiter);
+
+                Console.WriteLine("Ping example completed.");
+
+               
             }
 
-            foreach (IPAddress i in listIPAddresses)
-                Console.WriteLine($"{i}");
+           // foreach (IPAddress i in listIPAddresses)
+             //   Console.WriteLine($"{i}");
 
-
-
+                       
             /*
-            _ip.GetAddressBytes
-
             if (NetworkInterface.GetIsNetworkAvailable())
             {
                 var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -97,25 +109,8 @@ namespace UDPChat
                     }
                 }
             }
-            return;
-            string who = "127.0.0.1";
-            AutoResetEvent waiter = new AutoResetEvent(false);
-
-            Ping pingSender = new Ping();
-            pingSender.PingCompleted += new PingCompletedEventHandler(PingCompletedCallback);
-
-            string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-            byte[] buffer = Encoding.ASCII.GetBytes(data);
-            int timeout = 12000;
-            PingOptions options = new PingOptions(64, true);
-
-            Console.WriteLine("Time to live: {0}", options.Ttl);
-            Console.WriteLine("Don't fragment: {0}", options.DontFragment);
-
-            pingSender.SendAsync(who, timeout, buffer, options, waiter);
-
-            Console.WriteLine("Ping example completed.");
-            */
+            */           
+         
             return listIPAddresses;
         }
 
