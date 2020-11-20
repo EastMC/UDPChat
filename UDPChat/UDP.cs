@@ -28,7 +28,7 @@ namespace UDPChat
             remotePort = _portSend;
             localPort = _portReceive;
             password = _password;
-            remoteIPAddress = IPAddress.Parse("235.5.5.11");
+            remoteIPAddress = IPAddress.Parse("10.0.251.255");
 
             receiver = new Thread(new ThreadStart(Receive));
             receiver.Start();
@@ -62,7 +62,7 @@ namespace UDPChat
         public async void Receive()
         {
             UdpClient receivingUdpClient = new UdpClient(localPort);
-            receivingUdpClient.JoinMulticastGroup(remoteIPAddress, 50);
+            //receivingUdpClient.JoinMulticastGroup(remoteIPAddress, 50);
             try
             {
                 while (true)
